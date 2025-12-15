@@ -91,8 +91,8 @@ if Config.Framework == 'esx' then
         end
     end)
 
-    RegisterNetEvent('icy-playtime:checkWeapon')
-    AddEventHandler('icy-playtime:checkWeapon', function(weapon)
+    RegisterNetEvent('engineer-playtime:checkWeapon')
+    AddEventHandler('engineer-playtime:checkWeapon', function(weapon)
         local playerId = source
         if Config.Debug then print("Server received checkWeapon for player", playerId, "weapon:", weapon and weapon.name or "none") end
         if not checkPlaytime(playerId) then
@@ -147,8 +147,8 @@ elseif Config.Framework == 'qb' then
         return true
     end
 
-    RegisterNetEvent('icy-playtime:checkWeapon')
-    AddEventHandler('icy-playtime:checkWeapon', function(weapon)
+    RegisterNetEvent('engineer-playtime:checkWeapon')
+    AddEventHandler('engineer-playtime:checkWeapon', function(weapon)
         local playerId = source
         if Config.Debug then print("Server received checkWeapon for player", playerId, "weapon:", weapon and weapon.name or "none") end
         if not checkPlaytime(playerId) then
