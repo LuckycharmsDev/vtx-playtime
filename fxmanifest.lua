@@ -1,7 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 "yes"
-author "Sk"
+author "EngineerVTX"
 description "Playtime Script For ESX n QBCore"
 version "1.0.0"
 
@@ -24,4 +24,5 @@ server_scripts {
 client_scripts {
 	'client/*.lua',
 }
+
 
