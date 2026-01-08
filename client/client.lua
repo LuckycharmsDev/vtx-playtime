@@ -10,12 +10,12 @@ AddEventHandler('ox_inventory:currentWeapon', function(weapon)
             end
         end
         if Config.Debug then print("Triggering server check for weapon:", weapon.name) end
-        TriggerServerEvent('engineer-playtime:checkWeapon', weapon)
+        TriggerServerEvent('lucky-playtime:checkWeapon', weapon)
     end
 end)
 
-RegisterNetEvent('engineer-playtime:removeWeapon')
-AddEventHandler('engineer-playtime:removeWeapon', function()
+RegisterNetEvent('lucky-playtime:removeWeapon')
+AddEventHandler('lucky-playtime:removeWeapon', function()
     local ped = PlayerPedId()
     RemoveAllPedWeapons(ped, true)
 end)

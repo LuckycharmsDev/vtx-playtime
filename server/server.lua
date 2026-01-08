@@ -2,6 +2,8 @@ if Config.Framework == 'esx' then
     ESX = exports['es_extended']:getSharedObject()
 elseif Config.Framework == 'qb' then
     QBCore = exports['qb-core']:GetSharedObject()
+elseif Config.Framework == 'qbx' then
+    QBX = exports.qbx_core:GetCoreObject()
 end
 
 local function getPlayerTime(playerId)
@@ -25,7 +27,24 @@ local function getPlayerTime(playerId)
     elseif Config.Framework == 'qb' then
         local Player = QBCore.Functions.GetPlayer(playerId)
         if not Player then return end
-        
+
+        local result = MySQL.scalar.await('SELECT playtime FROM players WHERE citizenid = ?', {Player.PlayerData.citizenid})
+        local playtime = result or 0
+        local days = math.floor(playtime / 1440)
+        local hours = math.floor((playtime % 1440) / 60)
+        local minutes = playtime % 60
+        local totalHours = math.floor(playtime / 60)
+
+        return {
+            days = days,
+            hours = hours,
+            minutes = minutes,
+            totalHours = totalHours
+        }
+    elseif Config.Framework == 'qbx' then
+        local Player = exports.qbx_core:GetPlayer(playerId)
+        if not Player then return end
+
         local result = MySQL.scalar.await('SELECT playtime FROM players WHERE citizenid = ?', {Player.PlayerData.citizenid})
         local playtime = result or 0
         local days = math.floor(playtime / 1440)
@@ -91,8 +110,8 @@ if Config.Framework == 'esx' then
         end
     end)
 
-    RegisterNetEvent('engineer-playtime:checkWeapon')
-    AddEventHandler('engineer-playtime:checkWeapon', function(weapon)
+    RegisterNetEvent('lucky-playtime:checkWeapon')
+    AddEventHandler('lucky-playtime:checkWeapon', function(weapon)
         local playerId = source
         if Config.Debug then print("Server received checkWeapon for player", playerId, "weapon:", weapon and weapon.name or "none") end
         if not checkPlaytime(playerId) then
@@ -101,10 +120,15 @@ if Config.Framework == 'esx' then
         end
     end)
 
-elseif Config.Framework == 'qb' then
+elseif Config.Framework == 'qb' or Config.Framework == 'qbx' then
     CreateThread(function()
         while true do
-            local players = QBCore.Functions.GetQBPlayers()
+            local players
+            if Config.Framework == 'qb' then
+                players = QBCore.Functions.GetQBPlayers()
+            elseif Config.Framework == 'qbx' then
+                players = exports.qbx_core:GetQBPlayers()
+            end
             for _, Player in pairs(players) do
                 MySQL.update('UPDATE players SET playtime = playtime + 1 WHERE citizenid = ?', {Player.PlayerData.citizenid})
             end
@@ -113,7 +137,12 @@ elseif Config.Framework == 'qb' then
     end)
 
     local function checkPlaytime(playerId)
-        local Player = QBCore.Functions.GetPlayer(playerId)
+        local Player
+        if Config.Framework == 'qb' then
+            Player = QBCore.Functions.GetPlayer(playerId)
+        elseif Config.Framework == 'qbx' then
+            Player = exports.qbx_core:GetPlayer(playerId)
+        end
         if not Player then return end
 
         if Config.BypassJobs then
@@ -147,8 +176,8 @@ elseif Config.Framework == 'qb' then
         return true
     end
 
-    RegisterNetEvent('engineer-playtime:checkWeapon')
-    AddEventHandler('engineer-playtime:checkWeapon', function(weapon)
+    RegisterNetEvent('lucky-playtime:checkWeapon')
+    AddEventHandler('lucky-playtime:checkWeapon', function(weapon)
         local playerId = source
         if Config.Debug then print("Server received checkWeapon for player", playerId, "weapon:", weapon and weapon.name or "none") end
         if not checkPlaytime(playerId) then
@@ -188,8 +217,13 @@ lib.addCommand('setplaytime', {
         })
         return
     end
-    if Config.Framework == 'qb' then
-        local Player = QBCore.Functions.GetPlayer(targetId)
+    if Config.Framework == 'qb' or Config.Framework == 'qbx' then
+        local Player
+        if Config.Framework == 'qb' then
+            Player = QBCore.Functions.GetPlayer(targetId)
+        elseif Config.Framework == 'qbx' then
+            Player = exports.qbx_core:GetPlayer(targetId)
+        end
         if not Player then
             TriggerClientEvent('chat:addMessage', source, {
                 template = '^1[ ! ]^7 Player not found.'

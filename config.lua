@@ -3,7 +3,7 @@ Config = {}
 -- ==============================
 -- Framework
 -- ==============================
--- Options: 'esx' | 'qb'
+-- Options: 'esx' | 'qb' | 'qbx'
 Config.Framework = "esx"
 
 -- ==============================

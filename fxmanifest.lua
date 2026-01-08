@@ -2,7 +2,7 @@ fx_version 'cerulean'
 game 'gta5'
 lua54 "yes"
 author "Lucky"
-description "Playtime Script For ESX n QBCore"
+description "Playtime Script For ESX, QBCore & QBX"
 version "1.0.2"
 
 dependencies {
@@ -24,5 +24,3 @@ server_scripts {
 client_scripts {
 	'client/*.lua',
 }
-
-
